@@ -1,0 +1,63 @@
+## Ignore Visual Studio temporary files, build results, and more
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Build results
+bin/
+obj/
+[Bb]uild/
+[Bb]uild[Ll]og.*
+
+## Rider settings
+.idea/
+
+## NuGet Packages
+*.nupkg
+# The packages folder can be ignored unless you commit packages
+**/packages/*
+!**/packages/build/
+!**/packages/repositories.config
+
+## Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+## Visual Studio Code settings
+.vscode/
+
+## DotCover
+*.dotCover
+
+## NCrunch
+*.ncrunch*
+.*crunch*.local.xml
+
+## Logs
+*.log
+
+## User-specific files
+*.swp
+*.tmp
+
+## ASP.NET
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## Entity Framework
+Migrations/
+
+## Publish
+*.publish.xml
+*.azurePubxml
+
+## Others
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+## IDE-specific folders
+.idea/
