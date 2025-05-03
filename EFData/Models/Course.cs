@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EFData.Models
+{
+    public class Course: BaseEntity
+    {
+        public string Title { get; set; } = null!;
+        public int Credits { get; set; }
+
+        public virtual ICollection<Enrollment> Enrollments { get; set; } = new HashSet<Enrollment>();
+
+        public ICollection<CourseInstructor> CourseInstructors { get; set; } = new List<CourseInstructor>();
+
+
+    }
+}
