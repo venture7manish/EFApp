@@ -10,7 +10,7 @@ using EFServices.Interfaces;
 
 namespace EFServices.Services
 {
-    internal class CourseService : ICourseService
+    public class CourseService : ICourseService
     {
         private readonly ICourseRepository _courseRepository;
         public CourseService(ICourseRepository courseRepository)
