@@ -93,6 +93,7 @@ namespace EFServices.Services
 
             student.FirstName = dto.FirstName;
             student.LastName = dto.LastName;
+            student.UpdatedAt = DateTime.UtcNow;
 
             if (dto.Profile != null)
             {
@@ -130,6 +131,7 @@ namespace EFServices.Services
             if (student == null) return false;
 
             _studentRepository.Delete(student);
+            student.UpdatedAt = DateTime.UtcNow;
             await _studentRepository.SaveChangesAsync();
             return true;
         }

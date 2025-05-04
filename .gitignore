@@ -61,3 +61,5 @@ _ReSharper*/
 
 ## IDE-specific folders
 .idea/
+## project file 
+appSettings.json

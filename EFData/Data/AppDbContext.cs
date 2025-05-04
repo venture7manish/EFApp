@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EFData.Data
 {
-    public class AppDbContext: DbContext
+    public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -86,7 +86,7 @@ namespace EFData.Data
                 .IsRequired(false);
         }
 
-     
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -101,5 +101,5 @@ namespace EFData.Data
             builder.Entity<T>().HasQueryFilter(e => !e.IsDeleted);
         }
     }
-    
+
 }
