@@ -11,7 +11,7 @@ namespace EFData.Models
         public string Title { get; set; } = null!;
         public int Credits { get; set; }
 
-        public virtual ICollection<Enrollment> Enrollments { get; set; } = new HashSet<Enrollment>();
+        public virtual ICollection<StudentsCourses> Enrollments { get; set; } = new HashSet<StudentsCourses>();
 
         public ICollection<CourseInstructor> CourseInstructors { get; set; } = new List<CourseInstructor>();
 

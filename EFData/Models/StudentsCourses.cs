@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EFData.Models
 {
-    public class Enrollment: BaseEntity
+    public class StudentsCourses: BaseEntity
     {
         public int CourseId { get; set; }
         public int StudentId { get; set; }

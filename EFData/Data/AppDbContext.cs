@@ -18,7 +18,7 @@ namespace EFData.Data
         public DbSet<Student> Students => Set<Student>();
         public DbSet<StudentProfile> StudentProfiles => Set<StudentProfile>();
         public DbSet<Course> Courses => Set<Course>();
-        public DbSet<Enrollment> Enrollments => Set<Enrollment>();
+        public DbSet<StudentsCourses> Enrollments => Set<StudentsCourses>();
         public DbSet<Instructor> Instructors => Set<Instructor>();
         public DbSet<CourseInstructor> CourseInstructors => Set<CourseInstructor>();
 
@@ -38,6 +38,8 @@ namespace EFData.Data
                 }
             }
 
+            
+
             // Configure one-to-one Student - StudentProfile
             modelBuilder.Entity<Student>()
                 .HasOne(s => s.Profile)
@@ -45,22 +47,23 @@ namespace EFData.Data
                 .HasForeignKey<StudentProfile>(p => p.StudentId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Configure Enrollment composite key
-            modelBuilder.Entity<Enrollment>()
-                .HasKey(e => e.Id);
-
-            modelBuilder.Entity<Enrollment>()
+            // Configure StudentsCourses table
+            modelBuilder.Entity<StudentsCourses>()
+               .ToTable("StudentCourses") // Change the table name here
+               .HasKey(e => e.Id);
+            
+            modelBuilder.Entity<StudentsCourses>()
                 .HasIndex(e => new { e.StudentId, e.CourseId })
                 .IsUnique();
 
             // Configure relationship Enrollment - Student
-            modelBuilder.Entity<Enrollment>()
+            modelBuilder.Entity<StudentsCourses>()
                 .HasOne(e => e.Student)
                 .WithMany(s => s.Enrollments)
                 .HasForeignKey(e => e.StudentId);
 
             // Configure relationship Enrollment - Course
-            modelBuilder.Entity<Enrollment>()
+            modelBuilder.Entity<StudentsCourses>()
                 .HasOne(e => e.Course)
                 .WithMany(c => c.Enrollments)
                 .HasForeignKey(e => e.CourseId);

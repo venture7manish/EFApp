@@ -4,15 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EFData.Models
+namespace EFData.DTOs
 {
-    public class Student:BaseEntity
+    public class CreateInstructorDto
     {
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
-        public StudentProfile? Profile { get; set; }
-        public virtual ICollection<StudentsCourses> Enrollments { get; set; } = new HashSet<StudentsCourses>();
-
-
     }
 }
