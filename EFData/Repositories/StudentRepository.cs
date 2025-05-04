@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using EFData.Data;
 using EFData.Models;
@@ -21,6 +19,13 @@ namespace EFData.Repositories
             return await _dbSet
                 .Include(s => s.Profile)
                 .FirstOrDefaultAsync(s => s.Id == studentId);
+        }
+
+        public async Task<IEnumerable<Student>> GetAllAsync()
+        {
+            return await _dbSet
+                .Include(s => s.Profile)
+                .ToListAsync();
         }
     }
 }
