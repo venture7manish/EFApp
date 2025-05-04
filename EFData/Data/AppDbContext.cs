@@ -12,8 +12,8 @@ namespace EFData.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-
         }
+
         // DbSets
         public DbSet<Student> Students => Set<Student>();
         public DbSet<StudentProfile> StudentProfiles => Set<StudentProfile>();
@@ -26,19 +26,34 @@ namespace EFData.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Soft delete global filter for all entities derived from BaseEntity
-            // This will automatically filter out IsDeleted = true
+            // Soft delete global filter for all entities derived from BaseEntity except StudentProfile
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
-                if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+                if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType)
+                    && entityType.ClrType != typeof(StudentProfile)) // exclude StudentProfile
                 {
-                    var method = typeof(AppDbContext).GetMethod(nameof(SetSoftDeleteFilter), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+                    var method = typeof(AppDbContext)
+                        .GetMethod(nameof(SetSoftDeleteFilter), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
                     var genericMethod = method!.MakeGenericMethod(entityType.ClrType);
                     genericMethod.Invoke(null, new object[] { modelBuilder });
                 }
             }
 
+<<<<<<< Updated upstream
             
+=======
+            // Add matching query filter to StudentProfile for soft-deleted Students
+            modelBuilder.Entity<StudentProfile>()
+                .HasQueryFilter(sp => !sp.Student.IsDeleted);
+
+            // Exclude UpdatedAt and IsDeleted from StudentProfile
+            modelBuilder.Entity<StudentProfile>()
+                .Ignore(sp => sp.UpdatedAt)
+                .Ignore(sp => sp.DeletedAt)
+                .Ignore(sp => sp.IsDeleted);
+
+>>>>>>> Stashed changes
 
             // Configure one-to-one Student - StudentProfile
             modelBuilder.Entity<Student>()
@@ -56,19 +71,25 @@ namespace EFData.Data
                 .HasIndex(e => new { e.StudentId, e.CourseId })
                 .IsUnique();
 
+<<<<<<< Updated upstream
             // Configure relationship Enrollment - Student
             modelBuilder.Entity<StudentsCourses>()
+=======
+            modelBuilder.Entity<Enrollment>()
+>>>>>>> Stashed changes
                 .HasOne(e => e.Student)
                 .WithMany(s => s.Enrollments)
                 .HasForeignKey(e => e.StudentId);
 
+<<<<<<< Updated upstream
             // Configure relationship Enrollment - Course
             modelBuilder.Entity<StudentsCourses>()
+=======
+            modelBuilder.Entity<Enrollment>()
+>>>>>>> Stashed changes
                 .HasOne(e => e.Course)
                 .WithMany(c => c.Enrollments)
                 .HasForeignKey(e => e.CourseId);
-
-            // Configure many-to-many Course - Instructor via CourseInstructor
 
             modelBuilder.Entity<CourseInstructor>()
                 .HasKey(ci => new { ci.CourseId, ci.InstructorId });
@@ -86,20 +107,18 @@ namespace EFData.Data
                 .IsRequired(false);
         }
 
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                // Remove this if you are using DI to configure the DbContext
                 optionsBuilder.UseSqlServer("dbcs",
                     b => b.MigrationsAssembly("EFData"));
             }
         }
+
         private static void SetSoftDeleteFilter<T>(ModelBuilder builder) where T : BaseEntity
         {
             builder.Entity<T>().HasQueryFilter(e => !e.IsDeleted);
         }
     }
-
 }
