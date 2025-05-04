@@ -18,6 +18,8 @@ using EFServices;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
+builder.Configuration.AddJsonFile("appsettings.secrets.json");
+
 // Add DbContext with SQL Server connection string (adjust according to your environment)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("dbcs"),
