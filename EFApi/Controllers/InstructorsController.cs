@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EFApi.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
