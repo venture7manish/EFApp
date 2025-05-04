@@ -4,12 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EFData.DTOs
+namespace EFServices.DTOs
 {
-    public class CourseDto
+    public class StudentDTO
     {
         public int Id { get; set; }
-        public string Title { get; set; } = null!;
-        public int Credits { get; set; }
+
+        public string FullName { get; set; } = null!;
+
+        public StudentProfileDTO? Profile { get; set; }
     }
+
+   
 }

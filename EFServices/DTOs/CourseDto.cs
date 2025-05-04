@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EFData.DTOs
+namespace EFServices.DTOs
 {
-    public class InstructorDto
+    public class CourseDto
     {
         public int Id { get; set; }
-        public string FullName { get; set; } = null!;
+        public string Title { get; set; } = null!;
+        public int Credits { get; set; }
     }
 }

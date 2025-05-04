@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EFData.DTOs
+namespace EFServices.DTOs
 {
     public class CreateInstructorDto
     {
