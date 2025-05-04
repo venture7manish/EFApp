@@ -40,9 +40,6 @@ namespace EFData.Data
                 }
             }
 
-<<<<<<< Updated upstream
-            
-=======
             // Add matching query filter to StudentProfile for soft-deleted Students
             modelBuilder.Entity<StudentProfile>()
                 .HasQueryFilter(sp => !sp.Student.IsDeleted);
@@ -53,8 +50,6 @@ namespace EFData.Data
                 .Ignore(sp => sp.DeletedAt)
                 .Ignore(sp => sp.IsDeleted);
 
->>>>>>> Stashed changes
-
             // Configure one-to-one Student - StudentProfile
             modelBuilder.Entity<Student>()
                 .HasOne(s => s.Profile)
@@ -62,31 +57,20 @@ namespace EFData.Data
                 .HasForeignKey<StudentProfile>(p => p.StudentId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Configure StudentsCourses table
+            // Configure Enrollment composite key
             modelBuilder.Entity<StudentsCourses>()
-               .ToTable("StudentCourses") // Change the table name here
-               .HasKey(e => e.Id);
-            
+                .HasKey(e => e.Id);
+
             modelBuilder.Entity<StudentsCourses>()
                 .HasIndex(e => new { e.StudentId, e.CourseId })
                 .IsUnique();
 
-<<<<<<< Updated upstream
-            // Configure relationship Enrollment - Student
             modelBuilder.Entity<StudentsCourses>()
-=======
-            modelBuilder.Entity<Enrollment>()
->>>>>>> Stashed changes
                 .HasOne(e => e.Student)
                 .WithMany(s => s.Enrollments)
                 .HasForeignKey(e => e.StudentId);
 
-<<<<<<< Updated upstream
-            // Configure relationship Enrollment - Course
             modelBuilder.Entity<StudentsCourses>()
-=======
-            modelBuilder.Entity<Enrollment>()
->>>>>>> Stashed changes
                 .HasOne(e => e.Course)
                 .WithMany(c => c.Enrollments)
                 .HasForeignKey(e => e.CourseId);
