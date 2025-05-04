@@ -81,6 +81,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    // in case you need to redirect directly to Swagger API when trying to hit root URL, uncomment the below line.
+    //app.MapGet("/", () => Results.Redirect("/swagger"));
 }
 //app.UseSwagger();
 //app.UseSwaggerUI();
