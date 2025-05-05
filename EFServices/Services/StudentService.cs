@@ -131,7 +131,7 @@ namespace EFServices.Services
             if (student == null) return false;
 
             _studentRepository.Delete(student);
-            student.UpdatedAt = DateTime.UtcNow;
+            student.DeletedAt = DateTime.UtcNow;
             await _studentRepository.SaveChangesAsync();
             return true;
         }
