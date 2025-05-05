@@ -113,7 +113,7 @@ namespace EFServices.Services
             { 
                 var course = await _courseRepository.GetByIdAsync(id);
                 if (course == null) return false;
-                course.UpdatedAt = DateTime.UtcNow;
+                course.DeletedAt = DateTime.UtcNow;
                 _courseRepository.Delete(course);
                 await _courseRepository.SaveChangesAsync();
 
