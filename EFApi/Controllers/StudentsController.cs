@@ -8,11 +8,11 @@ namespace EFApi.Controllers
     [ApiController]
     [Route("api/[controller]")]
     //[Authorize]
-    public class StudentController : ControllerBase
+    public class StudentsController : ControllerBase
     {
 
         private readonly IStudentService _studentService;
-        public StudentController(IStudentService studentService)
+        public StudentsController(IStudentService studentService)
         {
             _studentService = studentService;
         }
