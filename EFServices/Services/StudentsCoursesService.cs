@@ -13,10 +13,14 @@ namespace EFServices.Services
     public class StudentsCoursesService : IStudentsCoursesService
     {
         private readonly IStudentsCoursesRepository _studentsCoursesRepository;
+        private readonly IStudentRepository _studentRepository; // Add this
+        private readonly ICourseRepository _courseRepository; // Add this
 
-        public StudentsCoursesService(IStudentsCoursesRepository studentsCoursesRepository)
+        public StudentsCoursesService(IStudentsCoursesRepository studentsCoursesRepository, IStudentRepository studentRepository, ICourseRepository courseRepository)
         {
             _studentsCoursesRepository = studentsCoursesRepository;
+            _studentRepository = studentRepository; // Initialize
+            _courseRepository = courseRepository; // Initialize
         }
 
         public async Task<IEnumerable<StudentsCoursesDto>> GetAllAsync()
@@ -70,6 +74,7 @@ namespace EFServices.Services
         {
             try 
             { 
+
                 var entity = new StudentsCourses
                 {
                     StudentId = dto.StudentId,
@@ -132,7 +137,21 @@ namespace EFServices.Services
         public async Task<StudentsCoursesDto> RegisterStudentToCourseAsync(int studentId, int courseId)
         {
             try 
-            { 
+            {
+                // Check if the student exists and is not deleted
+                var student = await _studentRepository.GetByIdAsync(studentId);
+                if (student == null || student.IsDeleted)
+                {
+                    throw new InvalidOperationException($"Student with ID {studentId} does not exist or is deleted.");
+                }
+
+                // Check if the course exists and is not deleted
+                var course = await _courseRepository.GetByIdAsync(courseId);
+                if (course == null || course.IsDeleted)
+                {
+                    throw new InvalidOperationException($"Course with ID {courseId} does not exist or is deleted.");
+                }
+
                 var allEntities = await _studentsCoursesRepository.GetAllAsync();
 
                 if (allEntities.Any(sc => sc.StudentId == studentId && sc.CourseId == courseId))
