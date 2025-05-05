@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EFData.Models;
 
 namespace EFServices.DTOs
 {
@@ -13,6 +14,7 @@ namespace EFServices.DTOs
         public string FullName { get; set; } = null!;
 
         public StudentProfileDTO? Profile { get; set; }
+        public List<CourseDto> Courses { get; set; } = new List<CourseDto>();
     }
 
    

@@ -5,6 +5,7 @@ using EFData.Data;
 using EFData.Models;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace EFData.Repositories
 {
     public class StudentRepository : Repository<Student>, IStudentRepository
@@ -18,13 +19,17 @@ namespace EFData.Repositories
         {
             return await _dbSet
                 .Include(s => s.Profile)
+                .Include(s => s.Enrollments)
+                    .ThenInclude(sc => sc.Course)
                 .FirstOrDefaultAsync(s => s.Id == studentId);
         }
 
-        public async Task<IEnumerable<Student>> GetAllAsync()
+        public override async Task<IEnumerable<Student>> GetAllAsync()
         {
             return await _dbSet
                 .Include(s => s.Profile)
+                .Include(s => s.Enrollments)
+                    .ThenInclude(sc => sc.Course)
                 .ToListAsync();
         }
     }

@@ -26,12 +26,18 @@ namespace EFServices.Services
             {
                 Id = s.Id,
                 FullName = $"{s.FirstName} {s.LastName}",
-                Profile = s.Profile != null ? new StudentProfileDTO
+                Profile = s.Profile == null ? null : new StudentProfileDTO
                 {
                     Id = s.Profile.Id,
                     Address = s.Profile.Address,
                     PhoneNumber = s.Profile.PhoneNumber
-                } : null
+                },
+                Courses = s.Enrollments.Select(sc => new CourseDto
+                {
+                    Id = sc.Course.Id,
+                    Title = sc.Course.Title,
+                    Credits = sc.Course.Credits
+                }).ToList()
             });
         }
 
@@ -49,7 +55,13 @@ namespace EFServices.Services
                     Id = student.Profile.Id,
                     Address = student.Profile.Address,
                     PhoneNumber = student.Profile.PhoneNumber
-                } : null
+                } : null,
+                Courses = student.Enrollments.Select(sc => new CourseDto
+                {
+                    Id = sc.Course.Id,
+                    Title = sc.Course.Title,
+                    Credits = sc.Course.Credits
+                }).ToList()
             };
         }
 
