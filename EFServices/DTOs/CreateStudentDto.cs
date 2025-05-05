@@ -13,6 +13,7 @@ namespace EFServices.DTOs
         [StringLength(50, ErrorMessage = "First name can't be longer than 50 characters.")]
         public string FirstName { get; set; } = null!;
 
+        [Required(ErrorMessage = "Last name is required.")]
         [StringLength(50, ErrorMessage = "Last name can't be longer than 50 characters.")]
         public string? LastName { get; set; }
 
