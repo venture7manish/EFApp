@@ -38,7 +38,7 @@ namespace EFServices.Services
                     {
                         Id = sc.Course.Id,
                         Title = sc.Course.Title,
-                        Credits = sc.Course.Credits
+                        //Credits = sc.Course.Credits
                     }).ToList()
                 });
             }
@@ -70,7 +70,7 @@ namespace EFServices.Services
                     {
                         Id = sc.Course.Id,
                         Title = sc.Course.Title,
-                        Credits = sc.Course.Credits
+                        //Credits = sc.Course.Credits
                     }).ToList()
                 };
             }

@@ -35,7 +35,7 @@ namespace EFServices.Services
                     StudentName = sc.Student != null ? $"{sc.Student.FirstName} {sc.Student.LastName}" : string.Empty,
                     CourseId = sc.CourseId,
                     CourseTitle = sc.Course != null ? sc.Course.Title : string.Empty,
-                    Grade = sc.Grade
+                    //Grade = sc.Grade
                 });
             }
             catch (Exception ex)
@@ -60,7 +60,7 @@ namespace EFServices.Services
                     StudentName = entity.Student != null ? $"{entity.Student.FirstName} {entity.Student.LastName}" : string.Empty,
                     CourseId = entity.CourseId,
                     CourseTitle = entity.Course != null ? entity.Course.Title : string.Empty,
-                    Grade = entity.Grade
+                    //Grade = entity.Grade
                 };
             }
             catch (Exception ex)
@@ -79,7 +79,7 @@ namespace EFServices.Services
                 {
                     StudentId = dto.StudentId,
                     CourseId = dto.CourseId,
-                    Grade = dto.Grade
+                    //Grade = dto.Grade
                 };
 
                 await _studentsCoursesRepository.AddAsync(entity);
@@ -102,7 +102,7 @@ namespace EFServices.Services
 
                 entity.StudentId = dto.StudentId;
                 entity.CourseId = dto.CourseId;
-                entity.Grade = dto.Grade;
+                //entity.Grade = dto.Grade;
 
                 _studentsCoursesRepository.Update(entity);
                 await _studentsCoursesRepository.SaveChangesAsync();

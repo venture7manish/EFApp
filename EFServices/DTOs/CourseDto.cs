@@ -10,6 +10,6 @@ namespace EFServices.DTOs
     {
         public int Id { get; set; }
         public string Title { get; set; } = null!;
-        public int Credits { get; set; }
+        //public int Credits { get; set; }
     }
 }

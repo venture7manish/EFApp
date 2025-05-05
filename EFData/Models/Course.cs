@@ -12,7 +12,7 @@ namespace EFData.Models
         [Required]
         [StringLength(150)]
         public string Title { get; set; } = null!;
-        public int Credits { get; set; }
+        //public int Credits { get; set; }
 
         public virtual ICollection<StudentsCourses> Enrollments { get; set; } = new HashSet<StudentsCourses>();
 

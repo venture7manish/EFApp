@@ -14,6 +14,6 @@ namespace EFServices.DTOs
         public string StudentName { get; set; } = null!;
         public int CourseId { get; set; }
         public string CourseTitle { get; set; } = null!;
-        public Grade? Grade { get; set; }
+        //public Grade? Grade { get; set; }
     }
 }

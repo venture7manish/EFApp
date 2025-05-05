@@ -27,7 +27,7 @@ namespace EFServices.Services
                 {
                     Id = c.Id,
                     Title = c.Title,
-                    Credits = c.Credits
+                    //Credits = c.Credits
                 });
             }
             catch (Exception ex)
@@ -48,7 +48,7 @@ namespace EFServices.Services
                 {
                     Id = course.Id,
                     Title = course.Title,
-                    Credits = course.Credits
+                    //Credits = course.Credits
                 };
             }
             catch (Exception ex)
@@ -65,7 +65,7 @@ namespace EFServices.Services
                 var course = new Course
                 {
                     Title = dto.Title,
-                    Credits = dto.Credits
+                    //Credits = dto.Credits
                 };
 
                 await _courseRepository.AddAsync(course);
@@ -75,7 +75,7 @@ namespace EFServices.Services
                 {
                     Id = course.Id,
                     Title = course.Title,
-                    Credits = course.Credits
+                    //Credits = course.Credits
                 };
             }
             catch (Exception ex)
@@ -93,7 +93,7 @@ namespace EFServices.Services
                 if (course == null) return false;
 
                 course.Title = dto.Title;
-                course.Credits = dto.Credits;
+                //course.Credits = dto.Credits;
                 course.UpdatedAt = DateTime.UtcNow;
                 _courseRepository.Update(course);
                 await _courseRepository.SaveChangesAsync();
