@@ -21,104 +21,159 @@ namespace EFServices.Services
 
         public async Task<IEnumerable<StudentsCoursesDto>> GetAllAsync()
         {
-            var entities = await _studentsCoursesRepository.GetAllAsync();
-            return entities.Select(sc => new StudentsCoursesDto
+            try 
+            { 
+                var entities = await _studentsCoursesRepository.GetAllAsync();
+                return entities.Select(sc => new StudentsCoursesDto
+                {
+                    Id = sc.Id,
+                    StudentId = sc.StudentId,
+                    StudentName = sc.Student != null ? $"{sc.Student.FirstName} {sc.Student.LastName}" : string.Empty,
+                    CourseId = sc.CourseId,
+                    CourseTitle = sc.Course != null ? sc.Course.Title : string.Empty,
+                    Grade = sc.Grade
+                });
+            }
+            catch (Exception ex)
             {
-                Id = sc.Id,
-                StudentId = sc.StudentId,
-                StudentName = sc.Student != null ? $"{sc.Student.FirstName} {sc.Student.LastName}" : string.Empty,
-                CourseId = sc.CourseId,
-                CourseTitle = sc.Course != null ? sc.Course.Title : string.Empty,
-                Grade = sc.Grade
-            });
+                // Log the exception appropriately
+                Console.WriteLine($"Error in GetAllAsync: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<StudentsCoursesDto?> GetByIdAsync(int id)
         {
-            var entity = await _studentsCoursesRepository.GetWithDetailsAsync(id);
-            if (entity == null) return null;
-
-            return new StudentsCoursesDto
+            try
             {
-                Id = entity.Id,
-                StudentId = entity.StudentId,
-                StudentName = entity.Student != null ? $"{entity.Student.FirstName} {entity.Student.LastName}" : string.Empty,
-                CourseId = entity.CourseId,
-                CourseTitle = entity.Course != null ? entity.Course.Title : string.Empty,
-                Grade = entity.Grade
-            };
+                var entity = await _studentsCoursesRepository.GetWithDetailsAsync(id);
+                if (entity == null) return null;
+
+                return new StudentsCoursesDto
+                {
+                    Id = entity.Id,
+                    StudentId = entity.StudentId,
+                    StudentName = entity.Student != null ? $"{entity.Student.FirstName} {entity.Student.LastName}" : string.Empty,
+                    CourseId = entity.CourseId,
+                    CourseTitle = entity.Course != null ? entity.Course.Title : string.Empty,
+                    Grade = entity.Grade
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetByIdAsync: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<StudentsCoursesDto> CreateAsync(CreateStudentsCoursesDto dto)
         {
-            var entity = new StudentsCourses
+            try 
+            { 
+                var entity = new StudentsCourses
+                {
+                    StudentId = dto.StudentId,
+                    CourseId = dto.CourseId,
+                    Grade = dto.Grade
+                };
+
+                await _studentsCoursesRepository.AddAsync(entity);
+                await _studentsCoursesRepository.SaveChangesAsync();
+
+                return await GetByIdAsync(entity.Id) ?? throw new InvalidOperationException("Failed to retrieve created entity.");
+            }
+            catch (Exception ex)
             {
-                StudentId = dto.StudentId,
-                CourseId = dto.CourseId,
-                Grade = dto.Grade
-            };
-
-            await _studentsCoursesRepository.AddAsync(entity);
-            await _studentsCoursesRepository.SaveChangesAsync();
-
-            return await GetByIdAsync(entity.Id) ?? throw new InvalidOperationException("Failed to retrieve created entity.");
+                Console.WriteLine($"Error in CreateAsync: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<bool> UpdateAsync(int id, CreateStudentsCoursesDto dto)
         {
-            var entity = await _studentsCoursesRepository.GetByIdAsync(id);
-            if (entity == null) return false;
+            try { 
+                var entity = await _studentsCoursesRepository.GetByIdAsync(id);
+                if (entity == null) return false;
 
-            entity.StudentId = dto.StudentId;
-            entity.CourseId = dto.CourseId;
-            entity.Grade = dto.Grade;
+                entity.StudentId = dto.StudentId;
+                entity.CourseId = dto.CourseId;
+                entity.Grade = dto.Grade;
 
-            _studentsCoursesRepository.Update(entity);
-            await _studentsCoursesRepository.SaveChangesAsync();
+                _studentsCoursesRepository.Update(entity);
+                await _studentsCoursesRepository.SaveChangesAsync();
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in UpdateAsync: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _studentsCoursesRepository.GetByIdAsync(id);
-            if (entity == null) return false;
+            try { 
+                var entity = await _studentsCoursesRepository.GetByIdAsync(id);
+                if (entity == null) return false;
 
-            _studentsCoursesRepository.Delete(entity);
-            await _studentsCoursesRepository.SaveChangesAsync();
+                _studentsCoursesRepository.Delete(entity);
+                await _studentsCoursesRepository.SaveChangesAsync();
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DeleteAsync: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<StudentsCoursesDto> RegisterStudentToCourseAsync(int studentId, int courseId)
         {
-            var allEntities = await _studentsCoursesRepository.GetAllAsync();
+            try 
+            { 
+                var allEntities = await _studentsCoursesRepository.GetAllAsync();
 
-            if (allEntities.Any(sc => sc.StudentId == studentId && sc.CourseId == courseId))
-                throw new InvalidOperationException("Student already registered to this course.");
+                if (allEntities.Any(sc => sc.StudentId == studentId && sc.CourseId == courseId))
+                    throw new InvalidOperationException("Student already registered to this course.");
 
-            var entity = new StudentsCourses
+                var entity = new StudentsCourses
+                {
+                    StudentId = studentId,
+                    CourseId = courseId
+                };
+
+                await _studentsCoursesRepository.AddAsync(entity);
+                await _studentsCoursesRepository.SaveChangesAsync();
+
+                return await GetByIdAsync(entity.Id) ?? throw new InvalidOperationException("Failed to retrieve created entity.");
+            }
+            catch (Exception ex)
             {
-                StudentId = studentId,
-                CourseId = courseId
-            };
-
-            await _studentsCoursesRepository.AddAsync(entity);
-            await _studentsCoursesRepository.SaveChangesAsync();
-
-            return await GetByIdAsync(entity.Id) ?? throw new InvalidOperationException("Failed to retrieve created entity.");
+                Console.WriteLine($"Error in RegisterStudentToCourseAsync: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<bool> UnregisterStudentFromCourseAsync(int studentId, int courseId)
         {
-            var allEntities = await _studentsCoursesRepository.GetAllAsync();
+            try 
+            { 
+                var allEntities = await _studentsCoursesRepository.GetAllAsync();
 
-            var entity = allEntities.FirstOrDefault(sc => sc.StudentId == studentId && sc.CourseId == courseId);
-            if (entity == null) return false;
+                var entity = allEntities.FirstOrDefault(sc => sc.StudentId == studentId && sc.CourseId == courseId);
+                if (entity == null) return false;
 
-            _studentsCoursesRepository.Delete(entity);
-            await _studentsCoursesRepository.SaveChangesAsync();
-            return true;
+                _studentsCoursesRepository.Delete(entity);
+                await _studentsCoursesRepository.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in UnregisterStudentToCourseAsync: {ex.Message}");
+                throw;
+            }
         }
     }
 }

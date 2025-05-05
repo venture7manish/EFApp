@@ -20,70 +20,110 @@ namespace EFServices.Services
 
         public async Task<IEnumerable<CourseDto>> GetAllAsync()
         {
-            var courses = await _courseRepository.GetAllAsync();
-            return courses.Select(c => new CourseDto
+            try
             {
-                Id = c.Id,
-                Title = c.Title,
-                Credits = c.Credits
-            });
+                var courses = await _courseRepository.GetAllAsync();
+                return courses.Select(c => new CourseDto
+                {
+                    Id = c.Id,
+                    Title = c.Title,
+                    Credits = c.Credits
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetAllAsync: {ex.Message}");
+                throw;
+            }
+
         }
 
         public async Task<CourseDto?> GetByIdAsync(int id)
         {
-            var course = await _courseRepository.GetByIdAsync(id);
-            if (course == null) return null;
+            try { 
+                var course = await _courseRepository.GetByIdAsync(id);
+                if (course == null) return null;
 
-            return new CourseDto
+                return new CourseDto
+                {
+                    Id = course.Id,
+                    Title = course.Title,
+                    Credits = course.Credits
+                };
+            }
+            catch (Exception ex)
             {
-                Id = course.Id,
-                Title = course.Title,
-                Credits = course.Credits
-            };
-        }
+                Console.WriteLine($"Error in GetByIdAsync: {ex.Message}");
+                throw;
+            }
+}
 
         public async Task<CourseDto> CreateAsync(CreateCourseDto dto)
         {
-            var course = new Course
-            {
-                Title = dto.Title,
-                Credits = dto.Credits
-            };
+            try 
+            { 
+                var course = new Course
+                {
+                    Title = dto.Title,
+                    Credits = dto.Credits
+                };
 
-            await _courseRepository.AddAsync(course);
-            await _courseRepository.SaveChangesAsync();
+                await _courseRepository.AddAsync(course);
+                await _courseRepository.SaveChangesAsync();
 
-            return new CourseDto
+                return new CourseDto
+                {
+                    Id = course.Id,
+                    Title = course.Title,
+                    Credits = course.Credits
+                };
+            }
+            catch (Exception ex)
             {
-                Id = course.Id,
-                Title = course.Title,
-                Credits = course.Credits
-            };
+                Console.WriteLine($"Error in CreateAsync: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<bool> UpdateAsync(int id, CreateCourseDto dto)
         {
-            var course = await _courseRepository.GetByIdAsync(id);
-            if (course == null) return false;
+            try 
+            { 
+                var course = await _courseRepository.GetByIdAsync(id);
+                if (course == null) return false;
 
-            course.Title = dto.Title;
-            course.Credits = dto.Credits;
-            course.UpdatedAt = DateTime.UtcNow;
-            _courseRepository.Update(course);
-            await _courseRepository.SaveChangesAsync();
+                course.Title = dto.Title;
+                course.Credits = dto.Credits;
+                course.UpdatedAt = DateTime.UtcNow;
+                _courseRepository.Update(course);
+                await _courseRepository.SaveChangesAsync();
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in UpdateAsync: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var course = await _courseRepository.GetByIdAsync(id);
-            if (course == null) return false;
-            course.UpdatedAt = DateTime.UtcNow;
-            _courseRepository.Delete(course);
-            await _courseRepository.SaveChangesAsync();
+            try 
+            { 
+                var course = await _courseRepository.GetByIdAsync(id);
+                if (course == null) return false;
+                course.UpdatedAt = DateTime.UtcNow;
+                _courseRepository.Delete(course);
+                await _courseRepository.SaveChangesAsync();
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DeleteAsync: {ex.Message}");
+                throw;
+            }
         }
     }
 }

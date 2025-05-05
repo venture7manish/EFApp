@@ -21,95 +21,77 @@ namespace EFServices.Services
 
         public async Task<IEnumerable<StudentDTO>> GetAllAsync()
         {
-            var students = await _studentRepository.GetAllAsync();
-            return students.Select(s => new StudentDTO
+            try
             {
-                Id = s.Id,
-                FullName = $"{s.FirstName} {s.LastName}",
-                Profile = s.Profile == null ? null : new StudentProfileDTO
+                var students = await _studentRepository.GetAllAsync();
+                return students.Select(s => new StudentDTO
                 {
-                    Id = s.Profile.Id,
-                    Address = s.Profile.Address,
-                    PhoneNumber = s.Profile.PhoneNumber
-                },
-                Courses = s.Enrollments.Select(sc => new CourseDto
-                {
-                    Id = sc.Course.Id,
-                    Title = sc.Course.Title,
-                    Credits = sc.Course.Credits
-                }).ToList()
-            });
+                    Id = s.Id,
+                    FullName = $"{s.FirstName} {s.LastName}",
+                    Profile = s.Profile == null ? null : new StudentProfileDTO
+                    {
+                        Id = s.Profile.Id,
+                        Address = s.Profile.Address,
+                        PhoneNumber = s.Profile.PhoneNumber
+                    },
+                    Courses = s.Enrollments.Select(sc => new CourseDto
+                    {
+                        Id = sc.Course.Id,
+                        Title = sc.Course.Title,
+                        Credits = sc.Course.Credits
+                    }).ToList()
+                });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception appropriately
+                Console.WriteLine($"Error in GetAllAsync: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<StudentDTO?> GetByIdAsync(int id)
         {
-            var student = await _studentRepository.GetStudentWithProfileAsync(id);
-            if (student == null) return null;
+            try { 
+                var student = await _studentRepository.GetStudentWithProfileAsync(id);
+                if (student == null) return null;
 
-            return new StudentDTO
+                return new StudentDTO
+                {
+                    Id = student.Id,
+                    FullName = $"{student.FirstName} {student.LastName}",
+                    Profile = student.Profile != null ? new StudentProfileDTO
+                    {
+                        Id = student.Profile.Id,
+                        Address = student.Profile.Address,
+                        PhoneNumber = student.Profile.PhoneNumber
+                    } : null,
+                    Courses = student.Enrollments.Select(sc => new CourseDto
+                    {
+                        Id = sc.Course.Id,
+                        Title = sc.Course.Title,
+                        Credits = sc.Course.Credits
+                    }).ToList()
+                };
+            }
+            catch (Exception ex)
             {
-                Id = student.Id,
-                FullName = $"{student.FirstName} {student.LastName}",
-                Profile = student.Profile != null ? new StudentProfileDTO
-                {
-                    Id = student.Profile.Id,
-                    Address = student.Profile.Address,
-                    PhoneNumber = student.Profile.PhoneNumber
-                } : null,
-                Courses = student.Enrollments.Select(sc => new CourseDto
-                {
-                    Id = sc.Course.Id,
-                    Title = sc.Course.Title,
-                    Credits = sc.Course.Credits
-                }).ToList()
-            };
+                Console.WriteLine($"Error in GetByIdAsync: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<StudentDTO> CreateAsync(CreateStudentDto dto)
         {
-            var student = new Student
+            try
             {
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
-            };
-
-            if (dto.Profile != null)
-            {
-                student.Profile = new StudentProfile
+                var student = new Student
                 {
-                    Address = dto.Profile.Address,
-                    PhoneNumber = dto.Profile.PhoneNumber
+                    FirstName = dto.FirstName,
+                    LastName = dto.LastName,
                 };
-            }
 
-            await _studentRepository.AddAsync(student);
-            await _studentRepository.SaveChangesAsync();
-
-            return new StudentDTO
-            {
-                Id = student.Id,
-                FullName = $"{student.FirstName} {student.LastName}",
-                Profile = student.Profile != null ? new StudentProfileDTO
-                {
-                    Id = student.Profile.Id,
-                    Address = student.Profile.Address,
-                    PhoneNumber = student.Profile.PhoneNumber
-                } : null
-            };
-        }
-
-        public async Task<bool> UpdateAsync(int id, CreateStudentDto dto)
-        {
-            var student = await _studentRepository.GetStudentWithProfileAsync(id);
-            if (student == null) return false;
-
-            student.FirstName = dto.FirstName;
-            student.LastName = dto.LastName;
-            student.UpdatedAt = DateTime.UtcNow;
-
-            if (dto.Profile != null)
-            {
-                if (student.Profile == null)
+                if (dto.Profile != null)
                 {
                     student.Profile = new StudentProfile
                     {
@@ -117,35 +99,93 @@ namespace EFServices.Services
                         PhoneNumber = dto.Profile.PhoneNumber
                     };
                 }
+
+                await _studentRepository.AddAsync(student);
+                await _studentRepository.SaveChangesAsync();
+
+                return new StudentDTO
+                {
+                    Id = student.Id,
+                    FullName = $"{student.FirstName} {student.LastName}",
+                    Profile = student.Profile != null ? new StudentProfileDTO
+                    {
+                        Id = student.Profile.Id,
+                        Address = student.Profile.Address,
+                        PhoneNumber = student.Profile.PhoneNumber
+                    } : null
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in CreateAsync: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<bool> UpdateAsync(int id, CreateStudentDto dto)
+        {
+            try
+            {
+                var student = await _studentRepository.GetStudentWithProfileAsync(id);
+                if (student == null) return false;
+
+                student.FirstName = dto.FirstName;
+                student.LastName = dto.LastName;
+                student.UpdatedAt = DateTime.UtcNow;
+
+                if (dto.Profile != null)
+                {
+                    if (student.Profile == null)
+                    {
+                        student.Profile = new StudentProfile
+                        {
+                            Address = dto.Profile.Address,
+                            PhoneNumber = dto.Profile.PhoneNumber
+                        };
+                    }
+                    else
+                    {
+                        student.Profile.Address = dto.Profile.Address;
+                        student.Profile.PhoneNumber = dto.Profile.PhoneNumber;
+                    }
+                }
                 else
                 {
-                    student.Profile.Address = dto.Profile.Address;
-                    student.Profile.PhoneNumber = dto.Profile.PhoneNumber;
+                    // If new profile is null, delete existing
+                    if (student.Profile != null)
+                    {
+                        student.Profile.IsDeleted = true;
+                    }
                 }
-            }
-            else
-            {
-                // If new profile is null, delete existing
-                if (student.Profile != null)
-                {
-                    student.Profile.IsDeleted = true;
-                }
-            }
 
-            _studentRepository.Update(student);
-            await _studentRepository.SaveChangesAsync();
-            return true;
+                _studentRepository.Update(student);
+                await _studentRepository.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in UpdateAsync: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var student = await _studentRepository.GetByIdAsync(id);
-            if (student == null) return false;
+            try
+            {
+                var student = await _studentRepository.GetByIdAsync(id);
+                if (student == null) return false;
 
-            _studentRepository.Delete(student);
-            student.DeletedAt = DateTime.UtcNow;
-            await _studentRepository.SaveChangesAsync();
-            return true;
+                _studentRepository.Delete(student);
+                student.DeletedAt = DateTime.UtcNow;
+                await _studentRepository.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DeleteAsync: {ex.Message}");
+                throw;
+            }
         }
     }
 }
