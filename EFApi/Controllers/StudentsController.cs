@@ -1,5 +1,6 @@
 ﻿using EFServices.DTOs;
 using EFServices.Interfaces;
+using EFServices.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,9 +19,29 @@ namespace EFApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] string orderBy = "num_courses", [FromQuery] string dir = "asc", [FromQuery(Name = "using")] string usingMethod = "ef")
         {
-            var students = await _studentService.GetAllAsync();
+            if (orderBy != "num_courses")
+            {
+                return BadRequest("Invalid orderBy parameter. Only 'num_courses' is supported.");
+            }
+
+            if (dir.ToLower() != "asc" && dir.ToLower() != "desc")
+            {
+                return BadRequest("Invalid dir parameter. Use 'asc' or 'desc'.");
+            }
+
+            IEnumerable<StudentDTO> students;
+
+            if (usingMethod.ToLower() == "ado")
+            {
+                students = await _studentService.GetAllSortedByCoursesUsingAdoAsync(dir.ToLower());
+            }
+            else
+            {
+                students = await _studentService.GetAllSortedByCoursesAsync(dir.ToLower());
+            }
+
             return Ok(students);
         }
 
