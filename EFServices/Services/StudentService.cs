@@ -36,7 +36,7 @@ namespace EFServices.Services
             string query = $@"
                 SELECT s.Id, s.FirstName, s.LastName, COUNT(sc.CourseId) AS CourseCount
                 FROM Students s
-                LEFT JOIN StudentCourses sc ON s.Id = sc.StudentId
+                LEFT JOIN StudentsCourses sc ON s.Id = sc.StudentId
                 GROUP BY s.Id, s.FirstName, s.LastName
                 ORDER BY CourseCount {orderDirection}";
 
@@ -98,22 +98,22 @@ namespace EFServices.Services
                 return _mapper.Map<StudentDTO>(student);
 
                 /*return new StudentDTO
+            {
+                Id = student.Id,
+                FullName = $"{student.FirstName} {student.LastName}",
+                Profile = student.Profile != null ? new StudentProfileDTO
                 {
-                    Id = student.Id,
-                    FullName = $"{student.FirstName} {student.LastName}",
-                    Profile = student.Profile != null ? new StudentProfileDTO
-                    {
-                        Id = student.Profile.Id,
-                        Address = student.Profile.Address,
-                        PhoneNumber = student.Profile.PhoneNumber
-                    } : null,
-                    Courses = student.Enrollments.Select(sc => new CourseDto
-                    {
-                        Id = sc.Course.Id,
-                        Title = sc.Course.Title,
-                        //Credits = sc.Course.Credits
-                    }).ToList()
-                };*/
+                    Id = student.Profile.Id,
+                    Address = student.Profile.Address,
+                    PhoneNumber = student.Profile.PhoneNumber
+                } : null,
+                Courses = student.Enrollments.Select(sc => new CourseDto
+                {
+                    Id = sc.Course.Id,
+                    Title = sc.Course.Title,
+                    //Credits = sc.Course.Credits
+                }).ToList()
+            };*/
             }
             catch (Exception ex)
             {
