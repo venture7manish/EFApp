@@ -73,7 +73,27 @@ namespace EFServices.Services
         public async Task<StudentsCoursesDto> CreateAsync(CreateStudentsCoursesDto dto)
         {
             try 
-            { 
+            {
+                // Check if the student exists and is not deleted
+                var student = await _studentRepository.GetByIdAsync(dto.StudentId);
+                if (student == null || student.IsDeleted)
+                {
+                    throw new InvalidOperationException($"Student with ID {dto.StudentId} does not exist or is deleted.");
+                }
+
+                // Check if the course exists and is not deleted
+                var course = await _courseRepository.GetByIdAsync(dto.CourseId);
+                if (course == null || course.IsDeleted)
+                {
+                    throw new InvalidOperationException($"Course with ID {dto.CourseId} does not exist or is deleted.");
+                }
+
+                // Check if the student is already registered for the course
+                var allEntities = await _studentsCoursesRepository.GetAllAsync();
+                if (allEntities.Any(sc => sc.StudentId == dto.StudentId && sc.CourseId == dto.CourseId))
+                {
+                    throw new InvalidOperationException("Student already registered to this course.");
+                }
 
                 var entity = new StudentsCourses
                 {

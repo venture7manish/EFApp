@@ -9,10 +9,15 @@ namespace EFServices
     {
         public MappingProfile()
         {
+            //CreateMap<Student, StudentDTO>()
+            //    .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FirstName + " " + src.LastName))
+            //    .ForMember(dest => dest.Courses, opt => opt.MapFrom(src => src.Enrollments.Select(sc => sc.Course)));
+
             CreateMap<Student, StudentDTO>()
-                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FirstName + " " + src.LastName))
+                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"))
+                .ForMember(dest => dest.Profile, opt => opt.MapFrom(src => src.Profile))
                 .ForMember(dest => dest.Courses, opt => opt.MapFrom(src => src.Enrollments.Select(sc => sc.Course)));
-            
+
             CreateMap<StudentProfile, StudentProfileDTO>();
 
             CreateMap<Course, CourseDto>();
