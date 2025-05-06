@@ -9,7 +9,6 @@ namespace EFServices.Interfaces
 {
     public interface IStudentService
     {
-        Task<IEnumerable<StudentDTO>> GetAllSortedByCoursesAsync(string dir);
 
         Task<IEnumerable<StudentDTO>> GetAllSortedByCoursesUsingAdoAsync(string dir);
 

@@ -37,10 +37,7 @@ namespace EFApi.Controllers
             {
                 students = await _studentService.GetAllSortedByCoursesUsingAdoAsync(dir.ToLower());
             }
-            else
-            {
-                students = await _studentService.GetAllSortedByCoursesAsync(dir.ToLower());
-            }
+            
 
             return Ok(students);
         }

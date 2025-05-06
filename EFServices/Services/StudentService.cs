@@ -64,30 +64,6 @@ namespace EFServices.Services
             return students;
         }
 
-        // ✅ Entity Framework implementation to get students sorted by number of courses
-        public async Task<IEnumerable<StudentDTO>> GetAllSortedByCoursesAsync(string dir)
-        {
-            try
-            {
-                // 1. Fetch all students (including Enrollments & Profile)
-                var students = await _studentRepository.GetAllAsync();
-
-                // 2. Sort in‐memory based on enrollment count
-                var sortedStudents = dir?.ToLower() == "desc"
-                    ? students.OrderByDescending(s => s.Enrollments.Count)
-                    : students.OrderBy(s => s.Enrollments.Count);
-
-                // 3. Let AutoMapper map each Student → StudentDTO
-                return _mapper.Map<IEnumerable<StudentDTO>>(sortedStudents);
-            }
-            catch (Exception ex)
-            {
-                // Use your ILogger here in production
-                Console.WriteLine($"Error in GetAllSortedByCoursesAsync: {ex.Message}");
-                throw;
-            }
-        }
-
         public async Task<StudentDTO?> GetByIdAsync(int id)
         {
             try
