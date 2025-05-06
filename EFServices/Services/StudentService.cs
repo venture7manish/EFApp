@@ -69,31 +69,20 @@ namespace EFServices.Services
         {
             try
             {
+                // 1. Fetch all students (including Enrollments & Profile)
                 var students = await _studentRepository.GetAllAsync();
 
+                // 2. Sort in‐memory based on enrollment count
                 var sortedStudents = dir?.ToLower() == "desc"
                     ? students.OrderByDescending(s => s.Enrollments.Count)
                     : students.OrderBy(s => s.Enrollments.Count);
 
-                return sortedStudents.Select(s => new StudentDTO
-                {
-                    Id = s.Id,
-                    FullName = $"{s.FirstName} {s.LastName}",
-                    Profile = s.Profile != null ? new StudentProfileDTO
-                    {
-                        Id = s.Profile.Id,
-                        Address = s.Profile.Address,
-                        PhoneNumber = s.Profile.PhoneNumber
-                    } : null,
-                    Courses = s.Enrollments.Select(e => new CourseDto
-                    {
-                        Id = e.Course.Id,
-                        Title = e.Course.Title
-                    }).ToList()
-                });
+                // 3. Let AutoMapper map each Student → StudentDTO
+                return _mapper.Map<IEnumerable<StudentDTO>>(sortedStudents);
             }
             catch (Exception ex)
             {
+                // Use your ILogger here in production
                 Console.WriteLine($"Error in GetAllSortedByCoursesAsync: {ex.Message}");
                 throw;
             }
