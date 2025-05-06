@@ -7,23 +7,26 @@ using EFServices.DTOs;
 using EFData.Models;
 using EFData.Repositories;
 using EFServices.Interfaces;
+using AutoMapper;
 
 namespace EFServices.Services
 {
     public class StudentService : IStudentService
     {
         private readonly IStudentRepository _studentRepository;
+        private readonly IMapper _mapper;
 
-        public StudentService(IStudentRepository studentRepository)
+        public StudentService(IStudentRepository studentRepository, IMapper mapper)
         {
             _studentRepository = studentRepository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<StudentDTO>> GetAllAsync()
         {
             try
             {
-                var students = await _studentRepository.GetAllAsync();
+                /*var students = await _studentRepository.GetAllAsync();
                 return students.Select(s => new StudentDTO
                 {
                     Id = s.Id,
@@ -40,7 +43,10 @@ namespace EFServices.Services
                         Title = sc.Course.Title,
                         //Credits = sc.Course.Credits
                     }).ToList()
-                });
+                });*/
+
+                var students = await _studentRepository.GetAllAsync();
+                return _mapper.Map<IEnumerable<StudentDTO>>(students);
             }
             catch (Exception ex)
             {
@@ -56,7 +62,9 @@ namespace EFServices.Services
                 var student = await _studentRepository.GetStudentWithProfileAsync(id);
                 if (student == null) return null;
 
-                return new StudentDTO
+                return _mapper.Map<StudentDTO>(student);
+
+                /*return new StudentDTO
                 {
                     Id = student.Id,
                     FullName = $"{student.FirstName} {student.LastName}",
@@ -72,7 +80,7 @@ namespace EFServices.Services
                         Title = sc.Course.Title,
                         //Credits = sc.Course.Credits
                     }).ToList()
-                };
+                };*/
             }
             catch (Exception ex)
             {
