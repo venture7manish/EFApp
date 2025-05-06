@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using EFServices.DTOs;
+using AutoMapper;
 using EFData.Models;
 using EFData.Repositories;
+using EFServices.DTOs;
 using EFServices.Interfaces;
-using AutoMapper;
+using Microsoft.Extensions.Configuration;
 
 namespace EFServices.Services
 {
@@ -15,72 +16,97 @@ namespace EFServices.Services
     {
         private readonly IStudentRepository _studentRepository;
         private readonly IMapper _mapper;
+        private readonly string? _connectionString;
 
-        public StudentService(IStudentRepository studentRepository, IMapper mapper)
+        public StudentService(IStudentRepository studentRepository, IMapper mapper, IConfiguration configuration)
         {
             _studentRepository = studentRepository;
             _mapper = mapper;
+            _connectionString = configuration.GetConnectionString("dbcs");
         }
 
-        public async Task<IEnumerable<StudentDTO>> GetAllAsync()
+        // ✅ ADO.NET implementation to get students sorted by number of courses
+        public async Task<IEnumerable<StudentDTO>> GetAllSortedByCoursesUsingAdoAsync(string dir)
+        {
+            var students = new List<StudentDTO>();
+
+            // Sanitize input
+            string orderDirection = dir?.ToLower() == "desc" ? "DESC" : "ASC";
+
+            string query = $@"
+                SELECT s.Id, s.FirstName, s.LastName, COUNT(sc.CourseId) AS CourseCount
+                FROM Students s
+                LEFT JOIN StudentCourses sc ON s.Id = sc.StudentId
+                GROUP BY s.Id, s.FirstName, s.LastName
+                ORDER BY CourseCount {orderDirection}";
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var command = new SqlCommand(query, connection))
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var student = new StudentDTO
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            FullName = $"{reader.GetString(reader.GetOrdinal("FirstName"))} {reader.GetString(reader.GetOrdinal("LastName"))}",
+                            Courses = new List<CourseDto>(), // Optional
+                            // Add this to your DTO
+                        };
+                        students.Add(student);
+                    }
+                }
+            }
+
+            return students;
+        }
+
+        // ✅ Entity Framework implementation to get students sorted by number of courses
+        public async Task<IEnumerable<StudentDTO>> GetAllSortedByCoursesAsync(string dir)
         {
             try
             {
-                /*var students = await _studentRepository.GetAllAsync();
-                return students.Select(s => new StudentDTO
+                var students = await _studentRepository.GetAllAsync();
+
+                var sortedStudents = dir?.ToLower() == "desc"
+                    ? students.OrderByDescending(s => s.Enrollments.Count)
+                    : students.OrderBy(s => s.Enrollments.Count);
+
+                return sortedStudents.Select(s => new StudentDTO
                 {
                     Id = s.Id,
                     FullName = $"{s.FirstName} {s.LastName}",
-                    Profile = s.Profile == null ? null : new StudentProfileDTO
+                    Profile = s.Profile != null ? new StudentProfileDTO
                     {
                         Id = s.Profile.Id,
                         Address = s.Profile.Address,
                         PhoneNumber = s.Profile.PhoneNumber
-                    },
-                    Courses = s.Enrollments.Select(sc => new CourseDto
+                    } : null,
+                    Courses = s.Enrollments.Select(e => new CourseDto
                     {
-                        Id = sc.Course.Id,
-                        Title = sc.Course.Title,
-                        //Credits = sc.Course.Credits
+                        Id = e.Course.Id,
+                        Title = e.Course.Title
                     }).ToList()
-                });*/
-
-                var students = await _studentRepository.GetAllAsync();
-                return _mapper.Map<IEnumerable<StudentDTO>>(students);
+                });
             }
             catch (Exception ex)
             {
-                // Log the exception appropriately
-                Console.WriteLine($"Error in GetAllAsync: {ex.Message}");
+                Console.WriteLine($"Error in GetAllSortedByCoursesAsync: {ex.Message}");
                 throw;
             }
         }
 
         public async Task<StudentDTO?> GetByIdAsync(int id)
         {
-            try { 
+            try
+            {
                 var student = await _studentRepository.GetStudentWithProfileAsync(id);
                 if (student == null) return null;
 
                 return _mapper.Map<StudentDTO>(student);
-
-                /*return new StudentDTO
-                {
-                    Id = student.Id,
-                    FullName = $"{student.FirstName} {student.LastName}",
-                    Profile = student.Profile != null ? new StudentProfileDTO
-                    {
-                        Id = student.Profile.Id,
-                        Address = student.Profile.Address,
-                        PhoneNumber = student.Profile.PhoneNumber
-                    } : null,
-                    Courses = student.Enrollments.Select(sc => new CourseDto
-                    {
-                        Id = sc.Course.Id,
-                        Title = sc.Course.Title,
-                        //Credits = sc.Course.Credits
-                    }).ToList()
-                };*/
             }
             catch (Exception ex)
             {
@@ -96,7 +122,7 @@ namespace EFServices.Services
                 var student = new Student
                 {
                     FirstName = dto.FirstName,
-                    LastName = dto.LastName,
+                    LastName = dto.LastName
                 };
 
                 if (dto.Profile != null)
@@ -157,13 +183,9 @@ namespace EFServices.Services
                         student.Profile.PhoneNumber = dto.Profile.PhoneNumber;
                     }
                 }
-                else
+                else if (student.Profile != null)
                 {
-                    // If new profile is null, delete existing
-                    if (student.Profile != null)
-                    {
-                        student.Profile.IsDeleted = true;
-                    }
+                    student.Profile.IsDeleted = true;
                 }
 
                 _studentRepository.Update(student);
@@ -184,8 +206,8 @@ namespace EFServices.Services
                 var student = await _studentRepository.GetByIdAsync(id);
                 if (student == null) return false;
 
+                student.DeletedAt = DateTime.UtcNow; // Set before deleting
                 _studentRepository.Delete(student);
-                student.DeletedAt = DateTime.UtcNow;
                 await _studentRepository.SaveChangesAsync();
                 return true;
             }
