@@ -59,7 +59,7 @@ namespace EFData.Data
 
             // Configure Enrollment composite key
             modelBuilder.Entity<StudentsCourses>()
-                .ToTable("StudentCourses")
+                .ToTable("StudentsCourses")
                 .HasKey(e => e.Id);
 
             modelBuilder.Entity<StudentsCourses>()

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EFData.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigrations : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -88,36 +88,6 @@ namespace EFData.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StudentCourses",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CourseId = table.Column<int>(type: "int", nullable: false),
-                    StudentId = table.Column<int>(type: "int", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StudentCourses", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_StudentCourses_Courses_CourseId",
-                        column: x => x.CourseId,
-                        principalTable: "Courses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_StudentCourses_Students_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "StudentProfiles",
                 columns: table => new
                 {
@@ -139,26 +109,56 @@ namespace EFData.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "StudentsCourses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CourseId = table.Column<int>(type: "int", nullable: false),
+                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StudentsCourses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StudentsCourses_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_StudentsCourses_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_CourseInstructors_InstructorId",
                 table: "CourseInstructors",
                 column: "InstructorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StudentCourses_CourseId",
-                table: "StudentCourses",
-                column: "CourseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StudentCourses_StudentId_CourseId",
-                table: "StudentCourses",
-                columns: new[] { "StudentId", "CourseId" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_StudentProfiles_StudentId",
                 table: "StudentProfiles",
                 column: "StudentId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentsCourses_CourseId",
+                table: "StudentsCourses",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentsCourses_StudentId_CourseId",
+                table: "StudentsCourses",
+                columns: new[] { "StudentId", "CourseId" },
                 unique: true);
         }
 
@@ -169,10 +169,10 @@ namespace EFData.Migrations
                 name: "CourseInstructors");
 
             migrationBuilder.DropTable(
-                name: "StudentCourses");
+                name: "StudentProfiles");
 
             migrationBuilder.DropTable(
-                name: "StudentProfiles");
+                name: "StudentsCourses");
 
             migrationBuilder.DropTable(
                 name: "Instructors");

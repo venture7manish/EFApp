@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFData.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250505165941_InitialMigrations")]
-    partial class InitialMigrations
+    [Migration("20250506031050_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -204,7 +204,7 @@ namespace EFData.Migrations
                     b.HasIndex("StudentId", "CourseId")
                         .IsUnique();
 
-                    b.ToTable("StudentCourses", (string)null);
+                    b.ToTable("StudentsCourses", (string)null);
                 });
 
             modelBuilder.Entity("EFData.Models.CourseInstructor", b =>
