@@ -19,27 +19,39 @@ namespace EFApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] string orderBy = "num_courses", [FromQuery] string dir = "asc", [FromQuery(Name = "using")] string usingMethod = "ef")
+        public async Task<IActionResult> GetAll(
+    [FromQuery] string orderBy = "num_courses",
+    [FromQuery] string dir = "asc",
+    [FromQuery(Name = "using")] string usingMethod = "ef")
         {
-            if (orderBy != "num_courses")
+            if (orderBy.ToLower() != "num_courses")
             {
                 return BadRequest("Invalid orderBy parameter. Only 'num_courses' is supported.");
             }
 
-            if (dir.ToLower() != "asc" && dir.ToLower() != "desc")
+            dir = dir.ToLower();
+            if (dir != "asc" && dir != "desc")
             {
                 return BadRequest("Invalid dir parameter. Use 'asc' or 'desc'.");
             }
 
+            usingMethod = usingMethod.ToLower();
             IEnumerable<StudentDTO> students;
 
-            if (usingMethod.ToLower() == "ado")
+            if (usingMethod == "ado")
             {
-                students = await _studentService.GetAllSortedByCoursesUsingAdoAsync(dir.ToLower());
+                students = await _studentService.GetAllSortedByCoursesUsingAdoAsync(dir);
+                return Ok(students);
             }
-            
-
-            return Ok(students);
+            else if (usingMethod == "ef")
+            {
+                students = await _studentService.GetAllAsync();
+                return Ok(students);
+            }
+            else
+            {
+                return BadRequest("Invalid using parameter. Use 'ado' or 'ef'.");
+            }
         }
 
         [HttpGet("{id}")]

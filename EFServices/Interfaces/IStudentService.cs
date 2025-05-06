@@ -12,6 +12,8 @@ namespace EFServices.Interfaces
 
         Task<IEnumerable<StudentDTO>> GetAllSortedByCoursesUsingAdoAsync(string dir);
 
+        Task<IEnumerable<StudentDTO>> GetAllAsync();
+
         Task<StudentDTO?> GetByIdAsync(int id);
 
         Task<StudentDTO> CreateAsync(CreateStudentDto dto);

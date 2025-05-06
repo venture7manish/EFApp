@@ -64,6 +64,40 @@ namespace EFServices.Services
             return students;
         }
 
+        public async Task<IEnumerable<StudentDTO>> GetAllAsync()
+        {
+            try
+            {
+                /*var students = await _studentRepository.GetAllAsync();
+                return students.Select(s => new StudentDTO
+                {
+                    Id = s.Id,
+                    FullName = $"{s.FirstName} {s.LastName}",
+                    Profile = s.Profile == null ? null : new StudentProfileDTO
+                    {
+                        Id = s.Profile.Id,
+                        Address = s.Profile.Address,
+                        PhoneNumber = s.Profile.PhoneNumber
+                    },
+                    Courses = s.Enrollments.Select(sc => new CourseDto
+                    {
+                        Id = sc.Course.Id,
+                        Title = sc.Course.Title,
+                        //Credits = sc.Course.Credits
+                    }).ToList()
+                });*/
+
+                var students = await _studentRepository.GetAllAsync();
+                return _mapper.Map<IEnumerable<StudentDTO>>(students);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception appropriately
+                Console.WriteLine($"Error in GetAllAsync: {ex.Message}");
+                throw;
+            }
+        }
+
         public async Task<StudentDTO?> GetByIdAsync(int id)
         {
             try
