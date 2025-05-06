@@ -15,7 +15,7 @@ namespace EFServices.DTOs
 
         [Required(ErrorMessage = "Last name is required.")]
         [StringLength(50, ErrorMessage = "Last name can't be longer than 50 characters.")]
-        public string? LastName { get; set; }
+        public string LastName { get; set; } = null!;
 
         public CreateStudentProfileDto? Profile { get; set; }
     }
