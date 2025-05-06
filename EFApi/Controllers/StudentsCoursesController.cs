@@ -17,6 +17,7 @@ namespace EFApi.Controllers
         }
 
         [HttpGet]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> GetAll()
         {
             var studentsCourses = await _studentsCoursesService.GetAllAsync();
@@ -24,6 +25,7 @@ namespace EFApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> Get(int id)
         {
             var studentsCourse = await _studentsCoursesService.GetByIdAsync(id);
@@ -39,6 +41,7 @@ namespace EFApi.Controllers
         }
 
         [HttpPut("{id}")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> Update(int id, [FromBody] CreateStudentsCoursesDto dto)
         {
             var updated = await _studentsCoursesService.UpdateAsync(id, dto);
@@ -47,6 +50,7 @@ namespace EFApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> Delete(int id)
         {
             var deleted = await _studentsCoursesService.DeleteAsync(id);
